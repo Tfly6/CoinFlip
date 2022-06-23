@@ -39,14 +39,19 @@ PlayScene::PlayScene(int levelNum)
         this->close();
     });
 
+    QSound * winsoud = new QSound(":/res/LevelWinSound.wav",this);
+    QSound * coinsoud = new QSound(":/res/ConFlipSound.wav",this);
+
     myPushButton *backBtn = new myPushButton(":/res/BackButton.png",":/res/BackButtonSelected.png");
     backBtn->setParent(this);
     backBtn->move(this->width() - backBtn->width() , this->height() - backBtn->height());
     connect(backBtn,&QPushButton::clicked,[=](){
+        winsoud->stop();
+        coinsoud->stop();
         QSound * backSound = new QSound(":/res/TapButtonSound.wav",this);
         backSound->play();
         //告诉选择场景返回信号，选择场景监听信号
-        QTimer::singleShot(50,[=](){
+        QTimer::singleShot(600,[=](){
             emit this->chooseBackCenario();
          });
     });
@@ -117,7 +122,7 @@ PlayScene::PlayScene(int levelNum)
 
            //点击金币进行翻转
            connect(coin,&QPushButton::clicked,[=](){
-               QSound * coinsoud = new QSound(":/res/ConFlipSound.wav",this);
+
                coinsoud->play();
                //在翻转金币的时候禁用其他按钮
                for(int i = 0 ; i < 4; i++)
@@ -193,8 +198,9 @@ PlayScene::PlayScene(int levelNum)
                      an->setEasingCurve(QEasingCurve::OutBounce);
                      an->start();
 
-                     QSound * winsoud = new QSound(":/res/LevelWinSound.wav",this);
+
                      winsoud->play();
+
                  }
 
 

@@ -68,12 +68,12 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
             chooseSound->play();
             qDebug() << QString("你选择的是第 %1 关").arg(i + 1);
             this->hide();
-            play = new PlayScene(i+1);
-            play->setGeometry(this->geometry());
-            play->show();
+            this->play = new PlayScene(i+1);
+            this->play->setGeometry(this->geometry());
+            this->play->show();
 
-            connect(play,&PlayScene::chooseBackCenario,[=](){
-                play->hide();
+            connect(this->play,&PlayScene::chooseBackCenario,[=](){
+                //play->hide();
                 this->setGeometry(play->geometry());
                 this->show();
                 delete play;
