@@ -7,7 +7,6 @@ class myPushButton : public QPushButton
 {
     Q_OBJECT
 public:
-    //explicit myPushButton(QWidget *parent = nullptr);
     myPushButton(QString normalImg, QString pressImg = "");
     QString pressImgPath; //按下显示的图片
     QString normalImgPath; //正常显示的图片

@@ -6,8 +6,7 @@
 #include <QLabel>
 #include <QDebug>
 #include <QPropertyAnimation>
-#include <QSound>
-#include "mypushbutton.h"
+
 #include "mycoin.h"
 #include "dataconfig.h"
 
@@ -39,22 +38,13 @@ PlayScene::PlayScene(int levelNum)
         this->close();
     });
 
-    QSound * winsoud = new QSound(":/res/LevelWinSound.wav",this);
-    QSound * coinsoud = new QSound(":/res/ConFlipSound.wav",this);
+    coinsoud = new QSound(":/res/ConFlipSound.wav",this);
+    winsoud = new QSound(":/res/LevelWinSound.wav",this);
 
-    myPushButton *backBtn = new myPushButton(":/res/BackButton.png",":/res/BackButtonSelected.png");
+    backBtn = new myPushButton(":/res/BackButton.png",":/res/BackButtonSelected.png");
     backBtn->setParent(this);
     backBtn->move(this->width() - backBtn->width() , this->height() - backBtn->height());
-    connect(backBtn,&QPushButton::clicked,[=](){
-        winsoud->stop();
-        coinsoud->stop();
-        QSound * backSound = new QSound(":/res/TapButtonSound.wav",this);
-        backSound->play();
-        //告诉选择场景返回信号，选择场景监听信号
-        QTimer::singleShot(600,[=](){
-            emit this->chooseBackCenario();
-         });
-    });
+    connect(backBtn,&QPushButton::clicked,this,&PlayScene::back);
 
     //显示当前关卡数
     QLabel * label = new QLabel(this);
@@ -66,6 +56,35 @@ PlayScene::PlayScene(int levelNum)
     label->setGeometry(30, this->height()-50, 150, 50);
     label->setText(QString("Level：%1").arg(levelNum));
 
+    this->todo(); //游戏场景
+}
+
+void PlayScene::paintEvent(QPaintEvent *)
+{
+    QPainter paint(this);
+    QPixmap pix;
+    pix.load(":/res/PlayLevelSceneBg.png");//背景
+    paint.drawPixmap(0,0,this->width(),this->height(),pix);
+
+    //画背景上的图标
+    pix.load(":/res/Title.png");
+    paint.drawPixmap(this->width() * 0.5 - pix.width() * 0.5 ,30,pix.width() ,pix.height(),pix);
+}
+
+void PlayScene::back()
+{
+    winsoud->stop();
+    coinsoud->stop();
+    QSound * backSound = new QSound(":/res/TapButtonSound.wav",this);
+    backSound->play();
+    //告诉选择场景返回信号，选择场景监听信号
+    QTimer::singleShot(300,[=](){
+        emit this->chooseBackCenario();
+     });
+}
+
+void PlayScene::todo()
+{
     //胜利图片显示 默认在背景外
     QLabel * winLabel = new QLabel;
     QPixmap tmpPix;
@@ -122,7 +141,6 @@ PlayScene::PlayScene(int levelNum)
 
            //点击金币进行翻转
            connect(coin,&QPushButton::clicked,[=](){
-
                coinsoud->play();
                //在翻转金币的时候禁用其他按钮
                for(int i = 0 ; i < 4; i++)
@@ -198,27 +216,11 @@ PlayScene::PlayScene(int levelNum)
                      an->setEasingCurve(QEasingCurve::OutBounce);
                      an->start();
 
-
                      winsoud->play();
-
                  }
-
-
-
                });
            });
        }
     }
-}
 
-void PlayScene::paintEvent(QPaintEvent *)
-{
-    QPainter paint(this);
-    QPixmap pix;
-    pix.load(":/res/PlayLevelSceneBg.png");//背景
-    paint.drawPixmap(0,0,this->width(),this->height(),pix);
-
-    //画背景上的图标
-    pix.load(":/res/Title.png");
-    paint.drawPixmap(this->width() * 0.5 - pix.width() * 0.5 ,30,pix.width() ,pix.height(),pix);
 }

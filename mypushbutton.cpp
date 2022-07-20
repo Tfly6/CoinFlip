@@ -3,11 +3,6 @@
 #include <QDebug>
 #include <QPropertyAnimation>
 
-//myPushButton::myPushButton(QWidget *parent) : QWidget(parent)
-//{
-
-//}
-
 myPushButton::myPushButton(QString normalImg, QString pressImg)
 {
     this->normalImgPath = normalImg;

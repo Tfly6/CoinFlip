@@ -7,7 +7,6 @@ class MyCoin : public QPushButton
 {
     Q_OBJECT
 public:
-    //explicit MyCoin(QWidget *parent = nullptr);
     //参数代表传入的是金币还是银币路径
     MyCoin(QString btnImg);
 

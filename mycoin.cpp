@@ -1,11 +1,6 @@
 #include "mycoin.h"
 #include <QDebug>
 
-//MyCoin::MyCoin(QWidget *parent) : QWidget(parent)
-//{
-
-//}
-
 MyCoin::MyCoin(QString btnImg)
 {
     QPixmap pix;

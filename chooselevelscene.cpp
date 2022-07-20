@@ -1,5 +1,5 @@
 #include "chooselevelscene.h"
-#include "mypushbutton.h"
+
 #include <QMenuBar>
 #include <QPainter>
 #include <QTimer>
@@ -28,23 +28,43 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
         this->close();
     });
 
-    myPushButton *backBtn = new myPushButton(":/res/BackButton.png",":/res/BackButtonSelected.png");
+    backBtn = new myPushButton(":/res/BackButton.png",":/res/BackButtonSelected.png");
     backBtn->setParent(this);
     backBtn->move(this->width() - backBtn->width() , this->height() - backBtn->height());
-    connect(backBtn,&QPushButton::clicked,[=](){
-        QSound * backSound = new QSound(":/res/TapButtonSound.wav",this);
-        backSound->play();
-        //告诉主场景返回信号，主场景监听信号
-        QTimer::singleShot(100,[=](){
-           //第一种解决方法，父类指针
-           //this->hide();
-           //m_parent->show();
+    connect(backBtn,&QPushButton::clicked,this,&ChooseLevelScene::back);
 
-           //第二种解决方法 使用信号和槽 发送信号
-            emit this->chooseBackCenario();
-         });
+    this->todo();//操作为创建关卡选择按钮
+}
+
+void ChooseLevelScene::paintEvent(QPaintEvent *)
+{
+    QPainter paint(this);
+    QPixmap pix;
+    pix.load(":/res/OtherSceneBg.png");//背景
+    paint.drawPixmap(0,0,this->width(),this->height(),pix);
+
+    //画背景上的图标
+    pix.load(":/res/Title.png");
+    paint.drawPixmap(this->width() * 0.5 - pix.width() * 0.5 ,30,pix.width() ,pix.height(),pix);
+}
+
+void ChooseLevelScene::back()
+{
+    QSound * backSound = new QSound(":/res/TapButtonSound.wav",this);
+    backSound->play();
+    //告诉主场景返回信号，主场景监听信号
+    QTimer::singleShot(100,[=](){
+       //第一种解决方法，父类指针
+       //this->hide();
+       //m_parent->show();
+
+       //第二种解决方法 使用信号和槽 发送信号
+        emit this->chooseBackCenario();
     });
+}
 
+void ChooseLevelScene::todo()
+{
     //创建关卡选择按钮
     for(int i = 0;i < 20;i++)
     {
@@ -66,31 +86,25 @@ ChooseLevelScene::ChooseLevelScene(QWidget *parent) : QMainWindow(parent)
        connect(menuBtn,&QPushButton::clicked,[=](){
             QSound *chooseSound = new QSound(":/res/TapButtonSound.wav",this);
             chooseSound->play();
-            qDebug() << QString("你选择的是第 %1 关").arg(i + 1);
-            this->hide();
+            //qDebug() << QString("你选择的是第 %1 关").arg(i + 1);
             this->play = new PlayScene(i+1);
             this->play->setGeometry(this->geometry());
             this->play->show();
+            QTimer::singleShot(300,this,[=](){
+                this->hide();
+            });
 
+            //关卡界面发送退出信号，关卡选择界面响应
             connect(this->play,&PlayScene::chooseBackCenario,[=](){
-                //play->hide();
                 this->setGeometry(play->geometry());
                 this->show();
-                delete play;
-                play = NULL;
+                QTimer::singleShot(300,this,[=](){
+                    play->hide();
+                    delete play;
+                    play = NULL;
+                });
+
             });
         });
     }
-}
-
-void ChooseLevelScene::paintEvent(QPaintEvent *)
-{
-    QPainter paint(this);
-    QPixmap pix;
-    pix.load(":/res/OtherSceneBg.png");//背景
-    paint.drawPixmap(0,0,this->width(),this->height(),pix);
-
-    //画背景上的图标
-    pix.load(":/res/Title.png");
-    paint.drawPixmap(this->width() * 0.5 - pix.width() * 0.5 ,30,pix.width() ,pix.height(),pix);
 }
